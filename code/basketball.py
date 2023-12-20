@@ -62,6 +62,9 @@ class Stats:
             list of columns
         """
 
+        columns = self.columns
+        return columns
+
         raise NotImplementedError
 
     def load(self):
@@ -81,7 +84,7 @@ class Stats:
         Returns:
             metric column name
         """
-
+        return "PTS"
         raise NotImplementedError
 
     def vector(self, row):
@@ -246,7 +249,10 @@ class Stats:
             return row
 
         return np.array(
-            [0.0 if not row[x] or np.isnan(row[x]) else row[x] for x in self.columns]
+            [
+                0.0 if pd.isna(row[x]) or np.isnan(row[x]) else row[x]
+                for x in self.columns
+            ]
         )
 
 
@@ -291,7 +297,7 @@ class Counting(Stats):
         totals = pd.read_csv("../data/total-stats.csv")
 
         # Require player to have at least 40 Games
-        totals = totals[(totals["GP"])]
+        totals = totals[totals["GP"] >= 40]
 
         return totals
 
@@ -451,9 +457,9 @@ class Application:
         category = self.category("Totals", "searchcategory")
         with st.form("search"):
             if category == "Totals":
-                stats, columns = self.total, self.total.columns[:-6]
+                stats, columns = self.total, self.total.columns[7:]
             elif category == "Per Game":
-                stats, columns = self.per_game, self.per_game.columns[:-2]
+                stats, columns = self.per_game, self.per_game.columns[7:]
 
             # Enter stats with data editor
             inputs = st.data_editor(
