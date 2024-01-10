@@ -42,9 +42,11 @@ app_ui = ui.page_fluid(
 ))
 
 def random_player(all_players, earliest_season=1946, min_points=0.0, team="All"):
+    # Add a Year column for easier filtering
     seasons = all_players['Season']
     all_players["Year"] = [int(s.split('-')[0]) for s in seasons]
 
+    # Filter out players not on the team
     if team != "All":
         all_player_options = all_players[all_players['Team'] == team]
     else:
@@ -125,14 +127,20 @@ def server(input, output, session):
 
         @render.text
         def answer():
-            return f"The Correct Player was: " + player_name + "."
+            # If real player name is selected, return the correct player
+            if player_name != "No Players Meet the Criteria":
+                return f"The Correct Player was: " + player_name + "."
+            
+            # If no players meet the criteria, return a message
+            else:
+                return f"No Players Meet the Criteria. Try changing the minimum year, minimum PPG, or team."
 
         # Return table
         return render.DataGrid(player_stats, height="400px", width="90%")
     
     @render.text  # Change to render.html
     def guess():
-        if input.guess() == "Player Name":
+        if input.guess() == "Type Your Guess Here":
             return 'Please Select a Player'
         elif server.player_name == input.guess():
             return f'CORRECT! The player was {server.player_name}.'
