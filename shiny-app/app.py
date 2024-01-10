@@ -48,9 +48,11 @@ app_ui = ui.page_fluid(
                 selectize=False,
                 selected="All",
             ),
+            ui.input_switch("teams_only", "Teams Only", False),
             ui.input_action_button(
                 id="refresh", label="New Player", class_="btn-success"
             ),
+            ui.output_text("instructions"),
         ),
         ui.output_data_frame("player_stats_table"),
         ui.input_select(
@@ -67,6 +69,13 @@ app_ui = ui.page_fluid(
             "input.answer",
             ui.output_image("headshot", inline=True),
             ui.output_text_verbatim("answer"),
+        ),
+    ),
+    ui.panel_well(
+        "Created by Austin Barish. Check out the code on ",
+        ui.a(
+            "Github",
+            href="https://github.com/austinbarish/basketball-statistics/tree/main/shiny-app",
         ),
     ),
 )
@@ -125,10 +134,17 @@ def random_player(all_players, earliest_season=1946, min_points=0.0, team="All")
 
 
 def server(input, output, session):
+    # Text instructions
     @output
     @render.text
-    def input_txt():
-        return f"Minimum Year: {input.minimum_year()}, Minimum PPG: {input.minimum_ppg()}, Team(s): {input.team()}"
+    def instructions():
+        return f"Thank you for playing!"
+
+    # Author Acknowledgement
+    @output
+    @render.text
+    def author():
+        return f"Created by Austin Barish. Check out the code on GitHub: https://github.com/austinbarish/basketball-statistics/tree/main/shiny-app"
 
     @output
     @render.data_frame
@@ -305,7 +321,9 @@ def server(input, output, session):
                     return img
 
                 return "Please Select a Player"
-            elif server.player_name == input.guess():
+
+            # Compare cleaned texts in case of phantom spaces
+            elif server.player_name.strip() == input.guess().strip():
                 # Show the Correct Player's Headshot for correct answers
                 @render.image
                 def answer_headshot():
@@ -337,7 +355,8 @@ def server(input, output, session):
                     img: ImgData = {"src": image_path, "width": "100px"}
                     return img
 
-                return f"CORRECT! The player was {server.player_name}."
+                return (f"CORRECT! The player was {server.player_name}.",)
+
             else:
                 # Show the Incorrect Player's Headshot for incorrect answers
                 @render.image
@@ -437,8 +456,15 @@ def server(input, output, session):
             img: ImgData = {"src": image_path, "width": "100px"}
             return img
 
+        # If teams_only is selected, return a table of only the years and teams
+        if input.teams_only():
+            # Return table
+            return render.DataGrid(
+                player_stats[["Season", "Team"]], height="300px", width="100%"
+            )
+
         # Return table
-        return render.DataGrid(player_stats, height="400px", width="90%")
+        return render.DataGrid(player_stats, height="300px", width="100%")
 
 
 # Create the app
