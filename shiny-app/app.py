@@ -360,7 +360,7 @@ def server(input, output, session):
                     img: ImgData = {"src": image_path, "width": "100px"}
                     return img
 
-                return (f"CORRECT! The player was {server.player_name}.",)
+                return f"CORRECT! The player was {server.player_name}."
 
             else:
                 # Show the Incorrect Player's Headshot for incorrect answers
