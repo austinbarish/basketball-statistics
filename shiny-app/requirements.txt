@@ -2,3 +2,4 @@ shiny
 pandas
 requests
 shinyswatch
+pathlib
