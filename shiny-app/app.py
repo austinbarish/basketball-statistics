@@ -33,11 +33,11 @@ app_ui = ui.page_fluid(
     ui.layout_sidebar(
         ui.sidebar(
             ui.input_slider(
-                "minimum_year",
-                "Earliest Year Player Could be in the NBA",
+                "year_range",
+                "Years Player could be in the NBA",
                 min=1946,
                 max=2023,
-                value=2000,
+                value=[2000, 2023],
                 sep="",
             ),
             ui.input_slider("minimum_ppg", "Minimum Peak PPG of Player", 0, 50, 20),
@@ -82,7 +82,7 @@ app_ui = ui.page_fluid(
 
 
 # Function to get a random player given the filters
-def random_player(all_players, earliest_season=1946, min_points=0.0, team="All"):
+def random_player(all_players, season_range=[1946, 2023], min_points=0.0, team="All"):
     # Add a Year column for easier filtering
     seasons = all_players["Season"]
     all_players["Year"] = [int(s.split("-")[0]) for s in seasons]
@@ -95,7 +95,12 @@ def random_player(all_players, earliest_season=1946, min_points=0.0, team="All")
 
     # Filter out seasons before earliest_season
     all_player_options = all_player_options[
-        all_player_options["Year"] >= earliest_season
+        all_player_options["Year"] >= season_range[0]
+    ]
+
+    # Filter out seasons after latest_season
+    all_player_options = all_player_options[
+        all_player_options["Year"] <= season_range[1]
     ]
 
     # Filter out players with less than min_points per game
@@ -251,7 +256,7 @@ def server(input, output, session):
         # Get player name and stats
         player_id, player_name, player_stats = random_player(
             all_players,
-            earliest_season=input.minimum_year(),
+            season_range=input.year_range(),
             min_points=input.minimum_ppg(),
             team=input.team(),
         )
