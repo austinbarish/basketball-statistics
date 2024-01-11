@@ -29,6 +29,11 @@ all_teams = [team for team in all_teams if str(team) != "nan"]
 # App UI
 app_ui = ui.page_fluid(
     shinyswatch.theme.superhero(),
+    ui.tags.head(
+        ui.HTML(
+            "<script async src='https://www.googletagmanager.com/gtag/js?id=G-V3S3ZEBK44'></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date()); gtag('config', 'G-V3S3ZEBK44');</script>"
+        )
+    ),
     ui.panel_title("Guess the NBA Player", window_title="NBA Guesser"),
     ui.layout_sidebar(
         ui.sidebar(
@@ -76,6 +81,7 @@ app_ui = ui.page_fluid(
         ui.a(
             "Github",
             href="https://github.com/austinbarish/basketball-statistics/tree/main/shiny-app",
+            target="_blank",
         ),
     ),
 )
