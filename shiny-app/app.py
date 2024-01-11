@@ -77,12 +77,25 @@ app_ui = ui.page_fluid(
         ),
     ),
     ui.panel_well(
-        "Created by Austin Barish. Check out the code on ",
+        "Created by ",
+        ui.a(
+            "Austin Barish",
+            href="https://github.com/austinbarish",
+            target="_blank",
+        ),
+        ". Check out the code on ",
         ui.a(
             "Github",
             href="https://github.com/austinbarish/basketball-statistics/tree/main/shiny-app",
             target="_blank",
         ),
+        ". All data was collected via the ",
+        ui.a(
+            "NBA API",
+            href="https://github.com/swar/nba_api",
+            target="_blank",
+        ),
+        ".",
     ),
 )
 
