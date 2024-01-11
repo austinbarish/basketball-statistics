@@ -145,6 +145,10 @@ def random_player(all_players, season_range=[1946, 2023], min_points=0.0, team="
 
 
 def server(input, output, session):
+    # Create a server object
+    server = type("Server", (), {})()
+    server.previous_player = "Adam Silver"
+
     # Text instructions
     @output
     @render.text
@@ -353,6 +357,31 @@ def server(input, output, session):
 
                 return "Please Select a Player"
 
+            elif input.guess() == server.previous_player:
+                # Show the NBA Logo while waiting on a Guess
+                @render.image
+                def answer_headshot():
+                    # Get the current directory
+                    current_dir = Path.cwd()
+
+                    # Create the directory for the images if it doesn't exist
+                    image_dir = current_dir / "images"
+                    image_dir.mkdir(exist_ok=True)
+
+                    # Create the path for the image
+                    image_path = image_dir / f"nba.png"
+
+                    urllib.request.urlretrieve(
+                        "https://images.ctfassets.net/h8q6lxmb5akt/5qXnOINbPrHKXWa42m6NOa/421ab176b501f5bdae71290a8002545c/nba-logo_2x.png",
+                        image_path,
+                    )
+
+                    # Create the image data
+                    img: ImgData = {"src": image_path, "width": "100px"}
+                    return img
+
+                return "Please Select a the new Player"
+
             # Compare IDs for safety
             elif answer_id == guess_id:
                 # Show the Correct Player's Headshot for correct answers
@@ -385,6 +414,8 @@ def server(input, output, session):
                     # Create the image data
                     img: ImgData = {"src": image_path, "width": "100px"}
                     return img
+
+                server.previous_player = player_name
 
                 return f"CORRECT! The player was {server.player_name}."
 
