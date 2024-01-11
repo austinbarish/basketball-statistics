@@ -282,6 +282,26 @@ def server(input, output, session):
 
         @render.text
         def guess():
+            # Get the player_id for the guess and answer to avoid any errors
+            if (
+                input.guess() in player_names
+                and input.guess() != "Type Your Guess Here"
+            ):
+                guess_id = [
+                    id for id in all_players[all_players["Name"] == input.guess()]["ID"]
+                ].pop()
+                answer_id = [
+                    id
+                    for id in all_players[all_players["Name"] == server.player_name][
+                        "ID"
+                    ]
+                ].pop()
+
+            # If guess is blank, return different IDs
+            else:
+                guess_id = 1
+                answer_id = 2
+
             # If no player is selected, return a message
             if player_name == "No Players Meet the Criteria":
                 # Show the NBA Logo while waiting on a Guess
@@ -333,8 +353,8 @@ def server(input, output, session):
 
                 return "Please Select a Player"
 
-            # Compare cleaned texts in case of phantom spaces
-            elif server.player_name.strip() == input.guess().strip():
+            # Compare IDs for safety
+            elif answer_id == guess_id:
                 # Show the Correct Player's Headshot for correct answers
                 @render.image
                 def answer_headshot():
