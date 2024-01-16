@@ -442,7 +442,7 @@ def server(input, output, session):
                     img: ImgData = {"src": image_path, "width": "100px"}
                     return img
 
-                return "Please Select a the new Player"
+                return "Please Select the New Player"
 
             else:
                 # Show the Incorrect Player's Headshot for incorrect answers
